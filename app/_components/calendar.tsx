@@ -192,11 +192,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({ calendarEvents }) => {
               }
 
               return (
-                <TooltipProvider>
+                <TooltipProvider key={k}>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <p
-                        key={k}
                         onClick={() => openAllEventsDetail(day, e.color)}
                         style={{ backgroundColor: e.color }}
                         className={`text-xs px-2 mt-1 truncate rounded-sm cursor-pointer`}
