@@ -1,9 +1,12 @@
 import Image from "next/image";
+import CalendarView from "./_components/calendar";
+
 
 export default function Home() {
+  const events: any[] = [];
   return (
     <div>
-      welcome fullcalendar
+      <CalendarView   calendarEvents={events}  />
     </div>
   );
 }
