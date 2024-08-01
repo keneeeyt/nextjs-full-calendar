@@ -141,11 +141,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({ calendarEvents }) => {
   return (
     <div className="w-full bg-base-100 p-4 rounded-lg">
       <div className="flex items-center justify-between">
-        <div className="flex justify-normal gap-2 sm:gap-4">
-          <p className="font-semibold text-xl w-48">
+      <p className="font-semibold text-xl w-48">
             {moment(firstDayOfMonth).format("MMMM yyyy")}
           </p>
-
+        <div className="flex justify-normal gap-2 sm:gap-4">
           <Button variant="secondary" onClick={getPrevMonth}>
             <ChevronLeftIcon className="w-5 h-5" />
           </Button>
