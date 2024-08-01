@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { useEffect, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import moment from "moment";
@@ -6,8 +6,9 @@ import { Button } from "@/components/ui/button";
 
 interface Event {
   title: string;
-  startTime: string;
-  theme: string;
+  start: string;
+  color: string;
+  reservation: string;
 }
 
 interface CalendarViewProps {
@@ -16,24 +17,7 @@ interface CalendarViewProps {
   // openDayDetail: (detail: { filteredEvents: Event[]; title: string }) => void;
 }
 
-interface ThemeBg {
-  [key: string]: string;
-}
-
-const THEME_BG: ThemeBg = {
-  BLUE: "bg-blue-200 dark:bg-blue-600 dark:text-blue-100",
-  GREEN: "bg-green-200 dark:bg-green-600 dark:text-green-100",
-  PURPLE: "bg-purple-200 dark:bg-purple-600 dark:text-purple-100",
-  ORANGE: "bg-orange-200 dark:bg-orange-600 dark:text-orange-100",
-  PINK: "bg-pink-200 dark:bg-pink-600 dark:text-pink-100",
-  // Add more theme colors if needed
-};
-
-
-
-const CalendarView: React.FC<CalendarViewProps> = ({
-  calendarEvents,
-}) => {
+const CalendarView: React.FC<CalendarViewProps> = ({ calendarEvents }) => {
   const today = moment().startOf("day");
   const weekdays = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
   const colStartClasses = [
@@ -46,9 +30,13 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     "col-start-7",
   ];
 
-  const [firstDayOfMonth, setFirstDayOfMonth] = useState(moment().startOf("month"));
+  const [firstDayOfMonth, setFirstDayOfMonth] = useState(
+    moment().startOf("month")
+  );
   const [events, setEvents] = useState<Event[]>([]);
-  const [currMonth, setCurrMonth] = useState(() => moment(today).format("MMM-yyyy"));
+  const [currMonth, setCurrMonth] = useState(() =>
+    moment(today).format("MMM-yyyy")
+  );
 
   useEffect(() => {
     setEvents(calendarEvents);
@@ -68,14 +56,16 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   const getEventsForCurrentDate = (date: Date) => {
     let filteredEvents = events.filter((e) =>
-      moment(date).isSame(moment(e.startTime), "day")
+      moment(date).isSame(moment(e.start), "day")
     );
     if (filteredEvents.length > 2) {
       let originalLength = filteredEvents.length;
       filteredEvents = filteredEvents.slice(0, 2);
       filteredEvents.push({
-        title: `${originalLength - 2} more`, theme: "MORE",
-        startTime: ""
+        title: `${originalLength - 2} more`,
+        color: "MORE",
+        start: "",
+        reservation: "",
       });
     }
     return filteredEvents;
@@ -84,8 +74,8 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const openAllEventsDetail = (date: Date, theme: string) => {
     if (theme !== "MORE") return;
     let filteredEvents = events
-      .filter((e) => moment(date).isSame(moment(e.startTime), "day"))
-      .map((e) => ({ title: e.title, theme: e.theme }));
+      .filter((e) => moment(date).isSame(moment(e.start), "day"))
+      .map((e) => ({ title: e.title, theme: e.color }));
     // openDayDetail({ filteredEvents, title: moment(date).format("D MMM YYYY") });
   };
 
@@ -98,7 +88,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   const getPrevMonth = () => {
-    const firstDayOfPrevMonth = moment(firstDayOfMonth).add(-1, "M").startOf("month");
+    const firstDayOfPrevMonth = moment(firstDayOfMonth)
+      .add(-1, "M")
+      .startOf("month");
     setFirstDayOfMonth(firstDayOfPrevMonth);
     setCurrMonth(moment(firstDayOfPrevMonth).format("MMM-yyyy"));
   };
@@ -110,7 +102,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   };
 
   const getNextMonth = () => {
-    const firstDayOfNextMonth = moment(firstDayOfMonth).add(1, "M").startOf("month");
+    const firstDayOfNextMonth = moment(firstDayOfMonth)
+      .add(1, "M")
+      .startOf("month");
     setFirstDayOfMonth(firstDayOfNextMonth);
     setCurrMonth(moment(firstDayOfNextMonth).format("MMM-yyyy"));
   };
@@ -147,21 +141,28 @@ const CalendarView: React.FC<CalendarViewProps> = ({
         {allDaysInMonth().map((day, idx) => (
           <div
             key={idx}
-            className={`${colStartClasses[moment(day).day()]} border border-solid w-full h-28`}
+            className={`${
+              colStartClasses[moment(day).day()]
+            } border border-solid w-full h-28`}
           >
             <p
               className={`inline-block flex items-center justify-center h-8 w-8 rounded-full mx-1 mt-1 text-sm cursor-pointer hover:bg-base-300 ${
-                isToday(day) && "bg-blue-100 dark:bg-blue-400 dark:hover:bg-base-300 dark:text-white"
-              } ${isDifferentMonth(day) && "text-slate-400 dark:text-slate-600"}`}
+                isToday(day) &&
+                "bg-blue-100 dark:bg-blue-400 dark:hover:bg-base-300 dark:text-white"
+              } ${
+                isDifferentMonth(day) && "text-slate-400 dark:text-slate-600"
+              }`}
               // onClick={() => addNewEvent(day)}
             >
               {moment(day).format("D")}
             </p>
             {getEventsForCurrentDate(day).map((e, k) => (
+           
               <p
                 key={k}
-                onClick={() => openAllEventsDetail(day, e.theme)}
-                className={`text-xs px-2 mt-1 truncate ${THEME_BG[e.theme] || ""}`}
+                // onClick={() => openAllEventsDetail(day, e.theme)}
+                style={{ backgroundColor: e.color }}
+                className={`text-xs px-2 mt-1 truncate`}
               >
                 {e.title}
               </p>
