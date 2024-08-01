@@ -3,12 +3,16 @@ import { useEffect, useState } from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import moment from "moment";
 import { Button } from "@/components/ui/button";
+import MoreEvents from "./more-events-sheet";
 
 interface Event {
   title: string;
   start: string;
   color: string;
   reservation: string;
+  name: string;
+  phone: string;
+  no_of_schedule: string;
 }
 
 interface CalendarViewProps {
@@ -37,6 +41,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ calendarEvents }) => {
   const [currMonth, setCurrMonth] = useState(() =>
     moment(today).format("MMM-yyyy")
   );
+  const [isOpen, setIsOpen] = useState(false);
+  const [moreEvents, setMoreEvents] = useState<any[]>([]);
+  const [moreEventsTitle, setMoreEventsTitle] = useState("");
 
   useEffect(() => {
     setEvents(calendarEvents);
@@ -66,6 +73,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ calendarEvents }) => {
         color: "MORE",
         start: "",
         reservation: "",
+        name: "",
+        phone: "",
+        no_of_schedule: "",
       });
     }
     return filteredEvents;
@@ -75,9 +85,22 @@ const CalendarView: React.FC<CalendarViewProps> = ({ calendarEvents }) => {
     if (theme !== "MORE") return;
     let filteredEvents = events
       .filter((e) => moment(date).isSame(moment(e.start), "day"))
-      .map((e) => ({ title: e.title, theme: e.color }));
-    // openDayDetail({ filteredEvents, title: moment(date).format("D MMM YYYY") });
+      .map((e) => ({ ...e }));
+    setMoreEventsTitle(moment(date).format("D MMM YYYY"));
+    setMoreEvents(filteredEvents);
+    getMoreEvents(filteredEvents);
   };
+
+  const getMoreEvents = (data: any) => {
+    if(data){
+      setIsOpen(true);
+    }
+  }
+
+  const onCloseMoreEvents = () => {
+    setIsOpen(false);
+    setMoreEvents([]);
+  }
 
   const isToday = (date: Date) => {
     return moment(date).isSame(moment(), "day");
@@ -160,9 +183,9 @@ const CalendarView: React.FC<CalendarViewProps> = ({ calendarEvents }) => {
            
               <p
                 key={k}
-                // onClick={() => openAllEventsDetail(day, e.theme)}
+                onClick={() => openAllEventsDetail(day, e.color)}
                 style={{ backgroundColor: e.color }}
-                className={`text-xs px-2 mt-1 truncate`}
+                className={`text-xs px-2 mt-1 truncate rounded-sm cursor-pointer`}
               >
                 {e.title}
               </p>
@@ -170,6 +193,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({ calendarEvents }) => {
           </div>
         ))}
       </div>
+      <MoreEvents open={isOpen} onClose={onCloseMoreEvents} moreEvents={moreEvents} moreEventsTitle={moreEventsTitle} />
     </div>
   );
 };
